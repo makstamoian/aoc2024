@@ -15,19 +15,25 @@ fn part_one() {
 
 fn part_two() {
     let input = include_str!("input.txt");
-    let re = Regex::new(r"mul\((?<number1>\d{1,3}),(?<number2>\d{1,3})\)").unwrap();
-    let dont_re = Regex::new(r"don't\(\)").unwrap();
-    let do_re = Regex::new(r"do\(\)").unwrap();
+    let re = Regex::new(r"mul\((?<number1>\d{1,3}),(?<number2>\d{1,3})\)|do\(\)|don't\(\)").unwrap();
 
+    let mut mul_enabled: bool = true;
     let mut sum: u32 = 0;
 
-    let mut matches = re.find_iter(input);
-    let mut dont_matches = dont_re.find_iter(input);
-    let mut do_matches = do_re.find_iter(input);
-
-    while let Some(dont) = dont_matches.next() {
-        
+    for cap in re.captures_iter(input) {
+        if let Some(_) = cap.get(1) {
+            if mul_enabled {
+                sum += cap[1].parse::<u32>().unwrap() * cap[2].parse::<u32>().unwrap()
+            }
+        } else if cap.get(0).unwrap().as_str() == "do()" {
+            mul_enabled = true;
+        } else if cap.get(0).unwrap().as_str() == "don't()" {
+            mul_enabled = false;
+        }
     }
+
+    println!("Part two: {}", sum);
+    
 }
 
 fn main () {
